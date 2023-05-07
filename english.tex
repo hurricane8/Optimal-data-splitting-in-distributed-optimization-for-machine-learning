@@ -84,8 +84,8 @@ Distribution of data among different devices taking into account their performan
 
 
 \section{Introduction}
-\cite{kovalev2022optimal} considers the problem of finding an optimal algorithm for distributed optimization
-Consider the features of the formulation of equation (2) in \cite{kovalev2022optimal}. The network consists of $m$ agents forming a star topology. The first agent is the main node, and the others are connected only to it and are necessary for additional computational power. We are investigating a problem in which we need to minimize the average loss function over some data, and we want to distribute the solution to the objects in our network, where calculations are performed using the edge nodes of the star topology, and copies of all optimization variables and the connection between the cells are made through the main (central) node. For each unit of the network, a loss function is calculated that measures the difference between the parameter vector and the sample vector. Thus, this problem has been reduced to minimizing the following function:
+The article \citep{kovalev2022optimal} considers the problem of finding an optimal algorithm for distributed optimization
+Consider the features of the formulation of equation (2) in \citep{kovalev2022optimal}. The network consists of $m$ agents forming a star topology. The first agent is the main node, and the others are connected only to it and are necessary for additional computational power. We are investigating a problem in which we need to minimize the average loss function over some data, and we want to distribute the solution to the objects in our network, where calculations are performed using the edge nodes of the star topology, and copies of all optimization variables and the connection between the cells are made through the main (central) node. For each unit of the network, a loss function is calculated that measures the difference between the parameter vector and the sample vector. Thus, this problem has been reduced to minimizing the following function:
 \\
 \begin{equation}
     \label{eq:1}
@@ -120,7 +120,7 @@ We obtained the following optimization problem:
     \label{eq:4}
     \underset{\sum\limits_{i = 1}^{n} b_i = N; \delta = \frac{L}{\sqrt{b_i}}}{min}[ 2\cdot\max(\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2, . ., \tau_n^{loc}\cdot b_n)\cdot K + 2\cdot K\cdot\tau_{comm} + \tau_1\cdot k_{some}]
 \end{equation}
-Our task is to minimize the time $T_{sum}$. Let's represent the time $\tau_i$ as $\tau_i = \tau_i^{loc}\cdot b_i$, where $\tau_i^{loc}$ is the time spent by the i-th device to process a unit of information submitted to its input, and $b_i$ is the size of dataset submitted to the i-th device. $b_i$ must satisfy the following constraints: $\sum\limits_{i = 1}^{n} b_i = N$, where $N$ is the size of the whole dataset, $\delta = \frac{L}{\sqrt{b_i}}$ (this estimate is given in \cite{kovalev2022optimal}).
+Our task is to minimize the time $T_{sum}$. Let's represent the time $\tau_i$ as $\tau_i = \tau_i^{loc}\cdot b_i$, where $\tau_i^{loc}$ is the time spent by the i-th device to process a unit of information submitted to its input, and $b_i$ is the size of dataset submitted to the i-th device. $b_i$ must satisfy the following constraints: $\sum\limits_{i = 1}^{n} b_i = N$, where $N$ is the size of the whole dataset, $\delta = \frac{L}{\sqrt{b_i}}$ (this estimate is given in \citep{kovalev2022optimal}).
 We got the following optimization problem:
 
 \begin{equation}
@@ -496,8 +496,11 @@ Let us analyze the obtained graphs. The formula for the case of large communicat
     \frac{1}{4} 10^6 N \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot b_1^{-\frac{5}{4}}=10^5 \tau_1^{loc} \Rightarrow b_1 \cong \frac{4 \cdot 10^3 r_1^{loc}}{N\left(\sum_{i=2}^n\left(\tau_i^{loc}\right)^{-1}\right)^{-1}}
 \end{gather*}
 
+\section{Conclusion}
 
-\bibliographystyle{unsrtnat}
+In this paper we presented a new way to partition the data for the distributed optimization problem. Our solution is based on separating convex and nonconvex subproblems and applying the accelerated extragradient algorithm from \citep{kovalev2022optimal} as well as the OGM-G algorithm from \citep{kim2021optimizing}. Our method works well on star topology networks with various communication costs between the server and the local machines. The theoretical results have been confirmed experimentally. This indicates that our method gives acceleration on tasks of this type.
+
+\bibliographystyle{plain}
 \bibliography{refs}  
 
 
