@@ -85,7 +85,7 @@
 \maketitle
 
 \begin{abstract}
-The distributed optimization problem has become increasingly relevant recently. We consider this problem in the context of varying capacities of devices between which data is shared. The objective of this study is to achieve an optimal ratio of distributed data between the server and local machines. Optimal gradient descent and its application to distributed optimization under similarity are employed to address this problem. However, most distributed approaches suffer from a significant bottleneck - the cost of communications. The paper proposes a solution that takes into account this cost. The running times of the system are compared between uniform and optimal distributions. The superior theoretical performance of our solutions is experimentally validated.
+The distributed optimization problem has become increasingly relevant recently. It has a lot of advantages such as processing a large amount of data in less time compared to undistributed methods. However, most distributed approaches suffer from a significant bottleneck - the cost of communications. Therefore, a large amount of research has recently been directed at reducing these costs. One such approach uses function similarity. A method has now been developed that produces lower estimates. But this method does not take into account the various power of network devices and the different relationship between communication time and server capacity. We consider this problem an the objective of this study is to achieve an optimal ratio of distributed data between the server and local machines for any communication costs. The running times of the network are compared between uniform and optimal distributions. The superior theoretical performance of our solutions is experimentally validated.
 \end{abstract}
 
 
@@ -96,73 +96,73 @@ The distributed optimization problem has become increasingly relevant recently. 
 \section{Introduction}
 
 \subsection{Distributed optimization}
-
-To achieve the best results in modern machine learning and minimization tasks, researchers and practitioners face various challenges. Training modern machine learning models remains an extremely challenging task, also because models are trained on increasingly large datasets. Having more data in the dataset increases the robustness and generalizability of the trained model. In this case, the data is typically processed using a network of devices, i.e., collected in a distributed manner and stored in edge devices of the network, such as in federated learning. In distributed learning of complex models, the communication overhead between devices in the network often becomes a bottleneck. Such a problem makes it necessary to develop more efficient distributed learning methods. We consider optimization problems of the following form:
+We consider optimization problems of the following form:
 \begin{equation}
     \label{eq:1}
-    \underset{x\in \mathbb{R}^d}{\min} ~ r(x) = \frac{1}{n} \sum \limits_{i = 1}^{n} f _i(x),
+    \underset{x\in \mathbb{R}^d}{\min} ~ f(x) = \frac{1}{n} \sum \limits_{i = 1}^{n} f _i(x),
 \end{equation}
+$x\in\mathbb{R}^d$ collects the parameters of a statistical model to be trained, $n$ is the number of devices/nodes, and $f_i$ represents the convex loss-function of agent $i$, which is unknown to the other agents. This is a direct formulation of a distributed optimization problem. Nowadays, there are some reasons to consider this.
 
-Here, $x\in\mathbb{R}^d$ collects the parameters of a statistical model to be trained, $n$ is the number of devices, and $f_i$ represents the convex loss-function of agent $i$, which is unknown to the other agents. Several solution methods have been proposed to solve \eqref{eq:1}. The prototype approach involves interleaving edge devices calculations (nodes $i = 1, \ldots n$) with communications to and from the master node ($i = 1$). The master node maintains and updates the authoritative copy of the optimization variables, eventually producing the final solution estimate.
+To achieve the best results in modern machine learning and minimization tasks, researchers and practitioners face various challenges. Training modern machine learning models remains an extremely challenging task, also because models are trained on increasingly large datasets. Having more data in the dataset increases the robustness and generalizability of the trained model. In this case, the data is typically processed using a network of devices, i.e., collected in a distributed manner and stored in edge nodes of the network, such as in federated learning. This has been discussed in \cite{verbraeken2020survey}.
+
+Several solution methods have been proposed to solve \eqref{eq:1}. The prototype approach involves interleaving edge devices calculations (nodes $i = 2, \ldots, n$) with communications to and from the server ($i = 1$), which maintains and updates the authoritative copy of the optimization variables, eventually producing the final solution estimate. In distributed learning of complex models, the communication overhead between devices in the network often becomes a bottleneck. Such a problem makes it necessary to develop more efficient distributed learning methods, some of which have been described in \cite{konevcny2016federated, ghosh2020communication, smith2018cocoa, gorbunov2021marina}.
 
 \subsection{Distributed optimization under similarity}
 
-Since communication cost often becomes the bottleneck in distributed computing, significant research has focused on developing communication-efficient distributed algorithms. Acceleration, based on Nesterov's concept, has been extensively studied for reducing the communication burden. For $L$-smooth and $\mu$-strongly convex functions $r$ in \eqref{eq:1}, first-order methods guarantee linear convergence with computation and communication complexities proportional to $\sqrt{\kappa}$. Here, $\kappa := \nicefrac{L}{\mu}$ represents the condition number of $r$. However, for ill-conditioned functions with a large $\kappa$, the polynomial dependence on $\kappa$ may be unsatisfactory. This is often the case for many empirical risk minimization (ERM) problems where the optimal regularization parameter for test predictive performance is very small.
+It's trendy today in machine learning to use moment-based methods. One of the methods for solving a distributed optimisation problem is the application of Nesterov acceleration \cite{nesterov2018lectures}, which is an optimal method for non-distributed optimization problems. This method can be transferred to distributed networks as follows. Consider $f = f_1 + \frac{\delta}{2} \|x\|_2^2$, where $f_1$ is the server loss function. Then the number of communications will be equal to the number of iterations. Local computations are performed using Nesterov acceleration. In this case, we obtain optimal estimates for local computations - $\sqrt{\kappa}, \kappa = \nicefrac{L}{\mu}$. In case $\kappa$ is small, this approach is acceptable. However, for ill-conditioned functions with a large $\kappa$, the polynomial dependence on $\kappa$ may be unsatisfactory, due to the high cost of communications. This is often the case for many empirical risk minimization (ERM) problems where the optimal regularization parameter for test predictive performance is very small.
 
-To further improve communication complexity, we can exploit the additional structure typically found in ERM problems, known as function similarity. This problem is considered in \cite{arjevani2015communication}, \cite{shamir2014communication}, \cite{matsushima2014distributed}. One can define it as the difference of function gradients, i.e., $||\nabla f_i (x) - \nabla f_j (x)|| < \delta ~ \forall x$. But this approach is not "natural", since if the problem is not bounded, such a $\delta$ cannot exist. Consider for example a quadratic problem: $\nexists~ \delta: ||(A_i - A_j)x|| < \delta~ if~ x\rightarrow \infty$. Therefore, we will consider a different approach. Specifically, for all $x$ in a suitable domain of interest and all $i \neq j = 1,\ldots,n$, the difference between the Hessian matrices of local losses, denoted by $\|\nabla ^2 f_i(x) - \nabla ^2 f_j(x)\|$, is bounded by $\delta$, where $\delta > 0$ measures the degree of similarity. Under this assumption, we can estimate $\delta \sim \mathcal O(\nicefrac{1}{\sqrt{N}})$, where N is the sample size per device. 
+To further improve communication complexity, we can exploit the additional structure typically found in ERM problems, known as function similarity \cite{arjevani2015communication, shamir2014communication, matsushima2014distributed}. One can define it as the difference of function gradients, i.e., $||\nabla f_i (x) - \nabla f_j (x)|| < \delta ~~  \forall x$. But this approach is not "natural", since if the problem is not bounded, such a $\delta$ cannot exist. Consider for example a quadratic problem: $\nexists~ \delta: \|(A_i - A_j)x\| < \delta~$  if $~ x\rightarrow \infty$. Therefore, we will consider a different approach: hessian similarity. Specifically, for all $x$ in a suitable domain of interest and all $i \neq j; ~ i,j \in \{1,\ldots,n\}$, the difference between the Hessian matrices of local losses, denoted by $\|\nabla ^2 f_i(x) - \nabla ^2 f_j(x)\|$, is bounded by $\delta$, where $\delta > 0$ measures the degree of similarity. Under this assumption, we can estimate $\delta \sim \mathcal O(\nicefrac{1}{\sqrt{N}})$, where $N$ is the sample size per device. This approach was used for the first time in \cite{shamir2014communication}.  After that, lower estimates were proved for this problem in \cite{arjevani2015communication}, where communication costs are proportional to $\sqrt{\nicefrac{\delta}{\mu}}$. Then for a long time researchers tried to find methods that would reach these estimates. Algorithms such as \cite{tian2022acceleration, sun2022distributed, reddi2016aide, hendrikx2020statistically, beznosikov2021distributed} have been obtained. In 2022, it was possible to obtain the optimal method which is described in \cite{kovalev2022optimal}. But all of them do not take into account in any way the fact that devices in the network may have different capacities, i.e., process a unit of information in different times, and relationship between communication time
+and server capacity also can be different. In this paper, we reply the question: 
+\begin{center}
+    \textit{ Can we find such a distribution of data among the devices in the network to reduce the actual running time of the optimal algorithm} \citep{kovalev2022optimal}\textit{~for any communication costs ?}
+\end{center}
 
 \subsection{Contributions}
 
-For this problem, as shown above, there already exist algorithms such as \cite{tian2022acceleration}, \cite{sun2022distributed}, \cite{reddi2016aide}, \cite{hendrikx2020statistically}, \cite{beznosikov2021distributed}. The last word was an accelerated extragradient algorithm \cite{kovalev2022optimal}, which reached the lower estimates \cite{arjevani2015communication}. But all of them do not take into account in any way the fact that devices in the network may have different capacities, i.e., process a unit of information in different times. In this paper, we reply the question: 
-\begin{center}
-    \textit{ Can we find such a distribution of data among the devices in the network to reduce the actual running time of the optimal algorithm} \citep{kovalev2022optimal}\textit{?}
-\end{center}
-Our contribution is as follows:
+In general, our contribution is as follows:
 \begin{itemize}
-    \item \textbf{Generalization of the computation model:} We build a general model for computing time in networks under distributed optimization. The model is based on the optimal algorithm \cite{kovalev2022optimal} and takes into account the different capacity of edge devices.
-    \item \textbf{Comprehensive analysis:} We pay special attention to the limiting cases and obtain results in them. The case where communications are too expensive is not of practical interest as the whole idea of distributed learning is lost, but the case of inexpensive communications (not so expensive that the communication takes longer than processing all data by just one device) is of great interest. 
-    \item \textbf{Different techniques for obtaining a solution:} We obtain results in different cases, including for different estimates of $\delta$. We use different techniques: Cardano's formula, upper estimates in limiting cases, finding the zero of the function using the simplest numerical methods.
+    \item \textbf{Generalization of the computation model.} We build a general model for computing time in networks under distributed optimization. The model is based on the optimal algorithm \cite{kovalev2022optimal} and takes into account the different capacity of edge devices, various communication costs.
+    \item \textbf{Comprehensive analysis.} We pay special attention to the limiting cases and obtain results in them. The case where communications are too expensive is not of practical interest as the whole idea of distributed learning is lost, but the case of inexpensive communications (not so expensive that the communication takes longer than processing all data by just one device) is of great interest. 
+    \item \textbf{Different techniques for obtaining a solution.} We obtain results in different cases, including for different estimates of $\delta$. We use different techniques: Cardano's formula, upper estimates in limiting cases, finding the zero of the function using the simplest numerical methods.
 \end{itemize}
  We also conducted experiments confirming that with the obtained distribution it takes less time to solve the selected problem.
 
 \section{Problem Statement}
 
-To achieve lower communication and local gradient complexity, we can refer to Algorithm \ref{alg:1} from \cite{kovalev2022optimal}. For this purpose, the function $r$ needs to be transformed into the following form:
+To achieve lower communication and local gradient complexity, we can refer to Algorithm \ref{alg:1} from \cite{kovalev2022optimal}. For this purpose, the function $f$ needs to be transformed into the following form:
 
 \begin{equation}
     \label{eq:2}
-    r(x) = \underbrace{f_1(x)}_{q(x)} + \underbrace{\frac{1}{n}\sum\limits_{i = 1}^{n}[f_i(x) - f_1(x)]}_{p(x)},
+    f(x) = \underbrace{f_1(x)}_{q(x)} + \underbrace{\frac{1}{n}\sum\limits_{i = 1}^{n}[f_i(x) - f_1(x)]}_{p(x)}.
 \end{equation}
 
-Here, $r$ is assumed to be convex and decomposed as the sum of a smooth, potentially non-convex function $p$ and a smooth convex function $q$. First-order information of $p$ and $q$ can be accessed separately. We are particularly interested in scenarios where evaluating the gradients of these two functions incurs heterogeneous costs, i.e., the cost of computing $\nabla p$ is significantly higher than that of computing $\nabla q$.
-
-Here is this algorithm .
+Here, $r$ is assumed to be convex and decomposed as the sum of a smooth, potentially non-convex function $p$ and a smooth convex function $q$. For our purposes, let us write down a more general statement, taking $p = f - f_1$. Then the algorithm will be rewritten in the following more general form:
 
 \begin{algorithm}
 \caption{Accelerated Extragradient}\label{alg:1}
 \begin{algorithmic}
-\item [1:] \textbf{Input:} $x^0 = x_f^0\in\mathbb R^d$
+\item [1:] \textbf{Input:} $x^0 = x_r^0\in\mathbb R^d$
 \item [2:] \textbf{Parameters:} $\tau\in (0, 1), \eta, \theta, \alpha > 0, K\in \{1, 2, \ldots\}$
 \item [3:] \textbf{for~}$k = 0, 1, 2, \ldots, K-1$\textbf{~do}
-\item [4:]    $\quad\quad x_g^k = \tau x^k + (1 - \tau)x_f^k$
-\item [5:]    $\quad\quad x_f^{k+1} \approx \arg\underset{x\in\mathbb R^d}{\min} [A_{\theta}^k (x) := p(x_g^k) + \langle \nabla p(x_g^k), x - x_g^k \rangle + \frac{1}{2\theta}\|x - x_g^k\|^2 + q(x)]$
-\item [6:] $\quad\quad x^{k+1} = x^k + \eta\alpha(x_f^{k+1} - x^k) - \eta\nabla r(x_f^{k+1})$
+\item [4:]    $\quad\quad x_g^k = \tau x^k + (1 - \tau)x_r^k$
+\item [5:]    $\quad\quad x_r^{k+1} \approx \arg\underset{x\in\mathbb R^d}{\min} [A_{\theta}^k (x) := \langle \nabla (f - f_1)(x_g^k), x - x_g^k \rangle + \frac{1}{2\theta}\|x - x_g^k\|^2 + f_1(x)]$
+\item [6:] $\quad\quad x^{k+1} = x^k + \eta\alpha(x_r^{k+1} - x^k) - \eta\nabla f(x_r^{k+1})$
 \item [7:] \textbf{end for}
 \item [8:] \textbf{Output:} $x^K$
 \end{algorithmic}
 \end{algorithm}
 
- Let us calculate how many operations this algorithm performs per iteration. In line 5, there is one communication, one local computation, one central node calculation, and additional central node computations. In line 6, there is one communication, one local computation, and one central node calculation. We make the following notations: $\tau_i$ - the time of one local computation on i-th device, $K$ - the number of iterations, $\tau_{comm}$ - the time for one communication, $k_{some}$ - additional computations of the central node, $n$ - the number of nodes in the network. Then we can write the general running time of the algorithm as:\\
+We need to analyse the work of this algorithm, namely, find out how many operations this algorithm performs per iteration. In line 5, when searching for $\arg\min$, one local computation is performed, followed by one communication to transmit these results, a computation on the server, and additional computations that also take place there. Then in line 6 there is one local computation, one communication, and one computation on the server. Let us introduce the following notations: $\tau_i$ - time of one local computation on the i-th device, $K$ - number of iterations, $\tau_{comm}$ - time of one communication, $k_{some}$ - additional computation of the central node, $n$ - number of nodes in the network. Taking this into account, the total running time of the algorithm can be written as:\\
 \begin{equation}
     \label{eq:3}
-    T_{sum} = 2\cdot\max(\tau_1, \tau_2, \ldots, \tau_n)\cdot K + 2\cdot K\cdot\tau_{comm} + \tau_1\cdot k_{some}
+    T_{sum} = 2\cdot\max(\tau_1, \tau_2, \ldots, \tau_n)\cdot K + 2\cdot K\cdot\tau_{comm} + \tau_1\cdot k_{some}.
 \end{equation}
 
-Our task is to minimize the time $T_{sum}$. Let's represent the time $\tau_i$ as $\tau_i = \tau_i^{loc}\cdot b_i$, where $\tau_i^{loc}$ is capacity, i.e., the time spent by the i-th device to process a unit of information submitted to its input, and $b_i$ is the size of dataset submitted to the i-th device. $b_i$ must satisfy the following constraints: $\sum\limits_{i = 1}^{n} b_i = N$, where $N$ is the size of the whole dataset, $\delta = \frac{L}{\sqrt{b_i}}$ or $\delta = \frac{L}{b_i}$ (this estimate is given in \cite{kovalev2022optimal}).
+Our task is to minimize the time $T_{sum}$. Let us represent the time $\tau_i$ as $\tau_i = \tau_i^{loc}\cdot b_i$, where $\tau_i^{loc}$ is capacity, i.e., the time spent by the i-th device to process a unit of information submitted to its input, and $b_i$ is the size of dataset submitted to the i-th device. $b_i$ must satisfy the following constraints: $\sum\limits_{i = 1}^{n} b_i = N$, where $N$ is the size of the whole dataset, $\delta = \frac{L}{\sqrt{b_i}}$ or $\delta = \frac{L}{b_i}$ (this estimate is given in \cite{kovalev2022optimal}).
 We obtained the following optimization problem:
 \begin{equation}
     \label{eq:4}
-    \underset{\sum\limits_{i = 1}^{n} b_i = N; \delta = \frac{L}{{b_1}^{\gamma}}}{\min}[ 2\cdot\max(\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2, \ldots, \tau_n^{loc}\cdot b_n)\cdot K + 2\cdot K\cdot\tau_{comm} + \tau_1\cdot k_{some}], ~ \gamma \in \{\frac{1}{2}, 1\}
+    \underset{\sum\limits_{i = 1}^{n} b_i = N; \delta = \frac{L}{{b_1}^{\gamma}}}{\min}[ 2\cdot\max(\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2, \ldots, \tau_n^{loc}\cdot b_n)\cdot K + 2\cdot K\cdot\tau_{comm} + \tau_1\cdot k_{some}], ~ \gamma \in \{\frac{1}{2}, 1\}.
 \end{equation}
 
 \section{How to solve \eqref{eq:4}}
@@ -178,23 +178,22 @@ Thus, \eqref{eq:4} is reduced to:
 \begin{equation}
      \notag
      + ~
-    \mathcal O(\max\{1,\sqrt{\frac{L_q}{L_p}}, \sqrt{\frac{L_p}{\mu}}, \sqrt{\frac{L_q}{\mu}}\}\log(\frac{1}{\varepsilon}))] ,  ~ \gamma \in \{\frac{1}{2}, 1\}
+    \mathcal O(\max\{1,\sqrt{\frac{L_q}{L_p}}, \sqrt{\frac{L_p}{\mu}}, \sqrt{\frac{L_q}{\mu}}\}\log(\frac{1}{\varepsilon}))] ,  ~ \gamma \in \{\frac{1}{2}, 1\}.
 \end{equation}
 
 \subsection{Auxiliary problem}
 Consider an auxiliary problem:
 \begin{equation}
     \label{eq:6}
-    \underset{\sum\limits_{i = 2}^{n} b_i = N}{\min} [\max(\tau_2^{loc}\cdot b_2, \tau_3^{loc}\cdot b_3, \ldots, \tau_n^{loc}\cdot b_n)]
+    \underset{\sum\limits_{i = 2}^{n} b_i = N}{\min} [\max(\tau_2^{loc}\cdot b_2, \tau_3^{loc}\cdot b_3, \ldots, \tau_n^{loc}\cdot b_n)].
 \end{equation}
 
 
 \begin{lemma}
     \label{l1}
-    The solution of problem \eqref{eq:6} is $\overrightarrow{b}$ satisfying $\tau_2^{loc}\cdot b_2 = \tau_3^{loc}\cdot b_3 = \ldots = \tau_n^{loc}\cdot b_n$
-
+    The solution of problem \eqref{eq:6} is $\overrightarrow{b}$ satisfying $\tau_2^{loc}\cdot b_2 = \tau_3^{loc}\cdot b_3 = \ldots = \tau_n^{loc}\cdot b_n$.
     \begin{proof}
-        \begin{spacing}{1.3}
+        \begin{spacing}{1.35}
         
         Without loss of generality, let us assume fixed values for $\tau_2^{loc}\leq \tau_3^{loc}\leq \ldots \leq \tau_n^{loc}$. \\
         Then let us arbitrarily choose $b_2\geq b_3\geq \ldots \geq b_n$.
@@ -233,7 +232,7 @@ Let us return to the problem \eqref{eq:5}. In addition to the minimum expression
 \begin{equation}
      \notag
      + ~
-    \mathcal O(\max\{1,\sqrt{\frac{L_q}{L_p}}, \sqrt{\frac{L_p}{\mu}}, \sqrt{\frac{L_q}{\mu}}\}\log(\frac{1}{\varepsilon}))] ,  ~ \gamma \in \{\frac{1}{2}, 1\}
+    \mathcal O(\max\{1,\sqrt{\frac{L_q}{L_p}}, \sqrt{\frac{L_p}{\mu}}, \sqrt{\frac{L_q}{\mu}}\}\log(\frac{1}{\varepsilon}))] ,  ~ \gamma \in \{\frac{1}{2}, 1\}.
 \end{equation}
 
 
@@ -241,8 +240,8 @@ Let us return to the problem \eqref{eq:5}. In addition to the minimum expression
 \subsection{Define the final minimization problem}
 It follows from Lemma \ref{l1} that $b_i \tau_i^{loc} = const ~ \forall i \in \overline{2, n}$.
 Therefore, $$ N - b_1 = \sum\limits_{i = 2}^{n} b_i = \sum\limits_{i = 2}^{n} \frac{\tau_2^{loc}\cdot b_2}{\tau_i^{loc}} = \tau_2^{loc}\cdot b_2 \cdot \sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}} \Rightarrow
-b_2 = \frac{N - b_1}{\tau_2 ^{loc}}(\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}$$ 
-As mentioned above, we will consider the case of $\delta = \frac{L}{b_1}$ and case of $\delta = \frac{L}{\sqrt{b_1}}$
+b_2 = \frac{N - b_1}{\tau_2 ^{loc}}(\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}.$$
+As mentioned above, we will consider the case of $\delta = \frac{L}{b_1}$ and case of $\delta = \frac{L}{\sqrt{b_1}}$.
 \subsubsection{Case of $~\delta = \frac{L}{b_1}$}
 There the following relations are fulfilled:
 \begin{equation}
@@ -258,7 +257,7 @@ There the following relations are fulfilled:
 Substituting the estimates into \eqref{eq:7}  the problem will take the following form:
 \begin{equation}
     \notag
-    \underset{\sum\limits_{i = 1}^{n} b_i = N}{\min}[(\max\{\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2\} + \tau_{comm}) \cdot \mathcal O(\sqrt{\frac{L}{\mu {b_1}}}\log(\frac{1}{\varepsilon})) + \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))]
+    \underset{\sum\limits_{i = 1}^{n} b_i = N}{\min}[(\max\{\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2\} + \tau_{comm}) \cdot \mathcal O(\sqrt{\frac{L}{\mu {b_1}}}\log(\frac{1}{\varepsilon})) + \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))].
 \end{equation}
 
 As a result, leaving the only variable $b_1$ in the function we pass to the final form of minimization problem:
@@ -270,12 +269,12 @@ As a result, leaving the only variable $b_1$ in the function we pass to the fina
 \begin{equation}
      \notag
      + ~
-    \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))] 
+    \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))] .
 \end{equation}
 Let us investigate the problem further. To do this, find the point at which the expressions under the maximum coincide. 
 \begin{equation}
     \notag
-    b_1^0 \cdot (\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}) = N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1} \Rightarrow b_1^0 = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}{\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}
+    b_1^0 \cdot (\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}) = N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1} \Rightarrow b_1^0 = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}{\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}.
 \end{equation}
 Thus, we obtained two half-intervals, on each of which we can formulate a different minimization problem:
 \begin{eqnarray}
@@ -319,7 +318,7 @@ Substituting these relations into \eqref{eq:7} we obtain
 
 \begin{equation}
     \notag
-    \underset{\sum\limits_{i = 1}^{n} b_i = N}{\min}[(\max\{\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2\} + \tau_{comm}) \cdot \mathcal O(\sqrt{\frac{L}{\mu \sqrt{b_1}}}\log(\frac{1}{\varepsilon})) + \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))]
+    \underset{\sum\limits_{i = 1}^{n} b_i = N}{\min}[(\max\{\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2\} + \tau_{comm}) \cdot \mathcal O(\sqrt{\frac{L}{\mu \sqrt{b_1}}}\log(\frac{1}{\varepsilon})) + \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))].
 \end{equation}
 
 Again, getting rid of all variables except $b_1$ we write the final minimization problem in this case
@@ -330,7 +329,7 @@ Again, getting rid of all variables except $b_1$ we write the final minimization
 \begin{equation}
      \notag
      + ~
-    \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))] 
+    \tau_1^{loc}\cdot b_1 \cdot \mathcal O(\sqrt{\frac{L}{\mu}}\log(\frac{1}{\varepsilon}))]. 
 \end{equation}
 Similarly, we select the point $b_1^0$, it turns out to be the same as in the previous paragraph. After we can obtained two half-intervals, on each of which we can formulate a different minimization problem:
 \begin{eqnarray}
@@ -340,7 +339,7 @@ Similarly, we select the point $b_1^0$, it turns out to be the same as in the pr
     (N-b_1) \cdot (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}
     \\
     (b) ~ ~ b_1^0 <  b_1 \leq N \Rightarrow \max\{\tau_1^{loc}\cdot b_1; ~(N-b_1) \cdot (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}} )^{-1}\} = \tau_1^{loc}\cdot b_1
-    \end{cases}\,
+    \end{cases}\,.
 \end{eqnarray}
 We construct functions of one variable $\mathcal{F}_1(b_1), \mathcal{F}_2(b_1)$ on the corresponding half-intervals that need to be minimized according to problem \eqref{eq:fm2}. Besides immediately find their derivatives for further analysis.\\
 $(a): ~\mathcal{F}_1(b_1) = [N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1} + \tau_{comm}]\cdot 
@@ -375,7 +374,7 @@ b = -\frac{1}{2} c_1 [N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1} + 
     (b): ~ ~ a = \frac{1}{2} c_1  \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon})\tau_1^{loc}; \quad 
 b = -\frac{1}{2}c_1 \tau_{comm}\cdot \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon}); \quad 
 c = \tau_1^{loc}\cdot c_2  \sqrt{\frac{L}{\mu}}log (\frac{1} {\varepsilon})
-    \end{cases}\,
+    \end{cases}\,.
 \end{eqnarray}
 
 Then on the condition that 
@@ -386,7 +385,7 @@ Then on the condition that
     {3 c^2 \sqrt[3]{2 a^6+3 \sqrt{3} \sqrt{4 a^3 b^3 c^6+27 b^4 c^8}+18 a^3 b c^2+27 b^2 c^4}}, \\
 \end{gather*}
 
-We get a solution: \\
+we get a solution: \\
 
 \begin{gather*}
      x=\frac{a^2}{3 c^2}+\frac{\sqrt[3]{2 a^6+3 \sqrt{3} \sqrt{4 a^3 b^3 c^6+27 b^4 c^8}+18 a^3 b c^2+27 b^2 c^4}}{3 \sqrt[3]{2} c^2}- \\ \frac{\sqrt[3]{2}\left(-a^4-6 a b c^2\right)} 
@@ -399,11 +398,11 @@ Hence the desired solution is trivially obtained. Since we have obtained one val
 Proceed similarly to \ref{eq:3.4.1} does not work, since we cannot write out the solution of these equations in analytic form due to their powers.
 Therefore, let us consider the following limiting cases:
 \begin{enumerate}
-    \item $\forall i\hookrightarrow \tau_{comm} \ll \tau_i^{loc}$
-    \item $\forall i\hookrightarrow \tau_{comm} \gg \tau_i^{loc}, \forall i\neq j\hookrightarrow \tau_i^{loc} = \tau_j^{loc}$
+    \item $\forall i\hookrightarrow \tau_{comm} \ll \tau_i^{loc};$
+    \item $\forall i\hookrightarrow \tau_{comm} \gg \tau_i^{loc}, \forall i\neq j\hookrightarrow \tau_i^{loc} = \tau_j^{loc}.$
 \end{enumerate}
 
-Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}),\beta = c_2\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}) $
+Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}),\beta = c_2\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}) $.
 
 \textbf{Consider case 1:}
 
@@ -416,7 +415,7 @@ Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}
     Consider
     \begin{equation}
         \label{eq:9}
-        \tau_1^{loc} \leq \tau_2^{loc} \leq\ldots \leq \tau_n^{loc}
+        \tau_1^{loc} \leq \tau_2^{loc} \leq\ldots \leq \tau_n^{loc}.
     \end{equation}\\
     Make the following estimate:
     \begin{equation}
@@ -426,7 +425,7 @@ Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}
     \begin{equation}
          \notag
          = ~
-        \frac{\tau_2^{loc}\cdot \ldots \cdot\tau_n^{loc}}{\tau_3^{loc}\cdot \ldots \cdot\tau_n^{loc} + \tau_2^{loc}\cdot \tau_4^{loc}\cdot\ldots \cdot\tau_n^{loc} + \ldots + \tau_2^{loc}\cdot \ldots \cdot\tau_{n-1}^{loc}} \underset{\eqref{eq:9}}{\geq}\frac{\tau_2^{loc}}{n - 1} \gg \tau_{comm}
+        \frac{\tau_2^{loc}\cdot \ldots \cdot\tau_n^{loc}}{\tau_3^{loc}\cdot \ldots \cdot\tau_n^{loc} + \tau_2^{loc}\cdot \tau_4^{loc}\cdot\ldots \cdot\tau_n^{loc} + \ldots + \tau_2^{loc}\cdot \ldots \cdot\tau_{n-1}^{loc}} \underset{\eqref{eq:9}}{\geq}\frac{\tau_2^{loc}}{n - 1} \gg \tau_{comm}.
     \end{equation}
    
     Given the estimate \eqref{eq:10}, the functions $\mathcal{F}_1(b_1), \mathcal{F'}_1(b_1)'$ are transformed as follows:
@@ -438,7 +437,7 @@ Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}
     \end{eqnarray}
     \begin{equation}
     \notag
-        \mathcal{F'}_1 (b_1) = \alpha(\sum\limits_{i = 2}^n \frac{1}{\tau_i^{loc}})^{-1}\cdot (-\frac{1}{4}b_1^{-\frac{5}{4}}N - \frac{3}{4}b_1^{-\frac{1}{4}}) + \tau_1^{loc}\beta
+        \mathcal{F'}_1 (b_1) = \alpha(\sum\limits_{i = 2}^n \frac{1}{\tau_i^{loc}})^{-1}\cdot (-\frac{1}{4}b_1^{-\frac{5}{4}}N - \frac{3}{4}b_1^{-\frac{1}{4}}) + \tau_1^{loc}\beta.
     \end{equation}
     We get the equation in the same powers, and so again we cannot write out an analytic solution.
 
@@ -454,7 +453,7 @@ Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}
     \begin{equation}
          \notag
          \gg ~
-       \tau_{comm}\frac{N}{2(n - 1)} \gg \tau_{comm}
+       \tau_{comm}\frac{N}{2(n - 1)} \gg \tau_{comm}.
     \end{equation}
     Then taking into account \eqref{eq:11}:
     \begin{equation}
@@ -463,9 +462,9 @@ Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}
     \end{equation}
     \begin{equation}
         \notag
-        \mathcal{F'}_2(b_1) = \frac{3}{4}\alpha\cdot\tau_1^{loc\cdot} b_1^{-\frac{1}{4}} + \beta\cdot\tau_1^{loc} > 0
+        \mathcal{F'}_2(b_1) = \frac{3}{4}\alpha\cdot\tau_1^{loc\cdot} b_1^{-\frac{1}{4}} + \beta\cdot\tau_1^{loc} > 0.
     \end{equation}
-    Since the derivative of the function is positive, the function is increasing, and therefore the minimum will be taken at $b_1 = b_1^{0} = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}{\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}$  
+    Since the derivative of the function is positive, the function is increasing, and therefore the minimum will be taken at $b_1 = b_1^{0} = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}{\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}.$  
 Thus, in the case of small $\tau_{comm}$ we obtained the following result:\\
 $b_{1_{\min}} \leq b_1^0 = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}{\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}$.
 \end{itemize}
@@ -474,7 +473,7 @@ $b_{1_{\min}} \leq b_1^0 = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc
 \item []
 Establish: $\tau := t_i^{loc}~ \forall i \in {1,\ldots, n} $. 
 \begin{equation}
-        \text{Then} ~ ~\mathcal{F} = (\max\{\tau b_1; (N-b_1) \frac{\tau}{n-1}\} + \tau_{comm}) \cdot \frac{\alpha}{\sqrt[4]{b_1}}+\tau \beta b_1 
+        \text{Then} ~ ~\mathcal{F} = (\max\{\tau b_1; (N-b_1) \frac{\tau}{n-1}\} + \tau_{comm}) \cdot \frac{\alpha}{\sqrt[4]{b_1}}+\tau \beta b_1. 
 \end{equation}
 
 Consider the case $\tau_{comm} = N^2 \tau$ . $N$ can be considered large, so $\tau_{comm} \gg N\tau$. Then:
@@ -484,7 +483,7 @@ Consider the case $\tau_{comm} = N^2 \tau$ . $N$ can be considered large, so $\t
 \end{equation}
 \begin{equation}
     \notag
-    \mathcal{F}' (b_1) = -\frac{\alpha \tau_{comm}}{4b_1\sqrt[4]{b_1}} + \beta \tau = 0 \Rightarrow b_{1_{\min}}^\frac{5}{4} = \frac{\tau _{comm}\alpha}{4\beta\tau}\Rightarrow b_{1_{\min}} = (\frac{\tau _{comm}\alpha}{4\beta\tau})^{\frac{4}{5}}
+    \mathcal{F}' (b_1) = -\frac{\alpha \tau_{comm}}{4b_1\sqrt[4]{b_1}} + \beta \tau = 0 \Rightarrow b_{1_{\min}}^\frac{5}{4} = \frac{\tau _{comm}\alpha}{4\beta\tau}\Rightarrow b_{1_{\min}} = (\frac{\tau _{comm}\alpha}{4\beta\tau})^{\frac{4}{5}}.
 \end{equation}
 Assuming that the found value $b_1$ lies on the interval $(0, N) $, that is, at $0 < (\frac{\tau _{comm}\alpha}{4\beta\tau})^{\frac{4}{5}} < N$, it will be the point of minimum function $\mathcal{F}$. Then:
 \begin{equation}
@@ -508,17 +507,17 @@ Summarizing all of the above in this case, it is worth noting that for very larg
 \end{itemize}
 
 \subsection{Practical solution}\label{eq:3.5}
-Since an analytical solution is not found for all cases, we give a general numerical solution to our problem. In order to determine the minimum of these functions on the respective half-intervals, we will examine points where the derivatives of $\mathcal{F'}_1(b_1)$ and $\mathcal{F'}_2(b_1)$ approach zero. It should be noted that, given the nature of these functions, their derivatives can only be zero once on the desired half-interval. Hence, by employing basic methods, we can locate the zeros of the derivatives. Subsequently, we need to compare the values of the corresponding function at these points with the value at the extreme point of the interval. One of these points will provide the minimum solution, thereby serving as the ultimate solution to the problem \eqref{eq:fm1} and \eqref{eq:fm2}.
+Since an analytical solution is not found for all cases, we give a general numerical solution to our problem. In order to determine the minimum of these functions on the respective half-intervals, we will examine points where the derivatives of $\mathcal{F'}_1(b_1)$ and $\mathcal{F'}_2(b_1)$ approach zero. It should be noted that, given the nature of these functions, their derivatives can only be zero once on the desired half-interval. Hence, by employing Newton's method \cite{polyak2007newton} for $\mathcal{F'}_1(b_1)$ and $\mathcal{F'}_2(b_1)$, we can locate its zeros. Subsequently, we need to compare the values of the corresponding function at these points with the value at the extreme point of the interval. One of these points will provide the minimum solution, thereby serving as the ultimate solution to the problem \eqref{eq:fm1} and \eqref{eq:fm2}.
 
 \section{Experiments}
 
 \subsection{Description of experiments}
-For experimental verification of the theoretical results we consider the problem "Ridge Regression": 
+For experimental verification of the theoretical results we consider the ridge regression problem: 
 \begin{equation}
     \label{ridge}
-    \underset{\omega}{\min}[ \frac{1}{2N} X\omega - y^2 + \frac{\lambda}{2}\omega^2], q(\omega) = \frac{1}{2N} X\omega - y^2, p(\omega) = \frac{\lambda}{2}\omega^2
+    \underset{\omega}{\min}[ \frac{1}{2N} \|X\omega - y\|_2^2 + \frac{\lambda}{2}\|\omega\|_2^2],
 \end{equation}
-The file \href{https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html#a1a}{a9a.txt} with number of lines N = 97683 was chosen as dataset.
+where $\omega$ is the vector of weights of the model, $\{x_i, y_i\}_{i = 1}^N$ is the training dataset, and $\lambda > 0$ is the regularization parameter. We consider a network  with 21 workers simulated on a single-CPU machine. We use dataset from LIBSVM. Value $\tau_1^{loc} = 1$, values for other i $\tau_i^{loc}, i \neq 1$ were taken conditionally and generated uniformly from 3 to 7. $\tau_{comm}$ were chosen so that $\frac{\tau _{comm}}{\tau _1^{loc}} = 10^l, l = \overline{-6, 12}$
 
 \begin{comment}
 In the first stages $\arg\underset{x}{\min} [p(x_k^g) + <\nabla p(x_k^g), x - x_k^g> + \frac{1}{2\Theta}||x - x_k^g||^2 + q(x)]$ was searched explicitly (Line 5 of Algorithm 1). This was done by equating the gradient to zero. Applying to the problem \ref{ridge}: 
@@ -531,34 +530,34 @@ $ x = (I \frac{1}{\Theta} + \frac{1}{N}X^TX)^{-1}(\frac{1}{\Theta} \omega_k^g + 
 
 Then in Algorithm 1 on line 5: $x_f^{k+1} = x$
 \end{comment}
- We implemented Algorithm \ref{alg:1} in the Python. The iterative OGM-G method of \cite{kim2021optimizing} was applied to find the solution of line 5 of Algorithm \ref{alg:1}. After calculating the required number of iterations to achieve a certain accuracy we find the values of constants $c_1, c_2$, and, respectively, $\alpha, \beta$. With their help, we were able to distribute the data from the dataset to the devices according to the above formulas. 
+ We implemented Algorithm \ref{alg:1} in Python 3.9.6 using the iterative OGM-G method from \cite{kim2021optimizing} to find the $\arg\min$ in \ref{alg:1}. That's what the original article \cite{kovalev2022optimal} recommends. After calculating the required number of iterations to achieve a certain accuracy we find the values of constants $c_1, c_2$, and, respectively, $\alpha, \beta$. With their help, we were able to distribute the data from the dataset to the devices according to the above formulas. 
 
 Next, we ran the algorithm and measured the running time on the resulting distribution of data across devices and uniform distribution. The cases of large and small communications were considered. 
 
-In the end, two problems were considered: 
+In the end, two cases were considered: 
 \begin{enumerate}
-    \item $\delta = \frac{L}{\sqrt{b_1}}$ 
-    \item $\delta = \frac{L}{b_1}$
+    \item $\delta = \frac{L}{\sqrt{b_1}}$;
+    \item $\delta = \frac{L}{b_1}$.
 \end{enumerate}
 
-For problem 1, following cases were considered:
+For case 1, following setups were considered:
 \begin{enumerate}
-    \item small communications ($b_1 = b_1^0$) \eqref{eq:3.4.2}
-    \item large communications \eqref{eq:3.4.2}
-    \item search for optimal allocation using Python optimization tools \eqref{eq:3.5}
+    \item small communications ($b_1 = b_1^0$) \eqref{eq:3.4.2};
+    \item large communications \eqref{eq:3.4.2};
+    \item search for optimal allocation using Newton's method \eqref{eq:3.5}.
 \end{enumerate}
 
-For problem 2, following cases were considered:
+For case 2, following setups were considered:
 \begin{enumerate}
-    \item search for the optimal solution using the Cardano formula \eqref{eq:3.4.1}
-    \item search for optimal allocation using Python optimization tools \eqref{eq:3.5}
+    \item search for the optimal solution using the Cardano formula \eqref{eq:3.4.1};
+    \item search for optimal allocation using Newton's method \eqref{eq:3.5}.
 \end{enumerate}
 
-For all cases, acceleration was found and graphs were plotted at \ref{ris:image}
+For all cases, acceleration was found and plots were shown at \ref{ris:image}
 
 \begin{figure}[!ht]
-    {\includegraphics[scale = 0.21]{final_graph1.png}}
-    {\includegraphics[scale = 0.21]{final_graph2.png}}
+    {\includegraphics[scale = 0.2]{final_graph1.png}}
+    {\includegraphics[scale = 0.2]{final_graph2.png}}
     \caption{Final results}
     \label{ris:image}
 \end{figure}
@@ -571,21 +570,21 @@ For all cases, acceleration was found and graphs were plotted at \ref{ris:image}
 %\end{figure}
 
 \subsection{Analyze}
-Let us analyze the obtained graphs. The formula for the case of large communications and the Cardano formula practically coincided with the optimal solution search. The case of small communications showed worse results. This is explained by the fact that the formula was obtained in rough approximation. But if we take into account the constants $\alpha, \beta$, we can get a better result, which is shown below.
+Let us analyze the obtained plots. The formula for the case of large communications and the Cardano formula practically coincided with the optimal solution search. The case of small communications showed worse results. This is explained by the fact that the formula was obtained in rough approximation. But if we take into account the constants $\alpha, \beta$, we can get a better result, which is shown below.
 
 
 
 \begin{gather*}
-    F=\left(\max \left\{\tau_1^{loc} \cdot b_1 ;\left(N-b_1\right) \cdot\left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1}\right\}+\tau_{comm}\right) \cdot \frac{\alpha}{\sqrt[4]{b_1}}+\tau_1^{loc} b_1 \cdot \beta, \\
-    \text {It has already been evaluated that } b_1 \leq b_1^0 \Rightarrow F=\left(N-b_1\right)\cdot \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot \frac{\alpha}{\sqrt[4]{b_1}}+\tau_1^{loc} b_1 \cdot \beta
+    F=\left(\max \left\{\tau_1^{loc} \cdot b_1 ;\left(N-b_1\right) \cdot\left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1}\right\}+\tau_{comm}\right) \cdot \frac{\alpha}{\sqrt[4]{b_1}}+\tau_1^{loc} b_1 \cdot \beta \\
+    \text {It has already been evaluated that } b_1 \leq b_1^0 \Rightarrow F=\left(N-b_1\right)\cdot \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot \frac{\alpha}{\sqrt[4]{b_1}}+\tau_1^{loc} b_1 \cdot \beta.
 \end{gather*}
 
 
 \begin{gather*}
-    F=N\left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \alpha b^{-\frac{1}{4}}-\left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \alpha b_1^{\frac{3}{4}}+\tau_1^{l o c} \beta b_1 \\
+    F=N\left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \alpha b^{-\frac{1}{4}}-\left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \alpha b_1^{\frac{3}{4}}+\tau_1^{l o c} \beta b_1. \\
     \text {Consider that} \quad \alpha \sim 10^6, \beta \sim 10^9 \Rightarrow \\ 
     F \cong 10^6 N \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot b^{-\frac{1}{4}}-10^6 \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot b_1^{\frac{3}{4}}+10^9 \tau_1^{loc} b_1 \\
-    \frac{1}{4} 10^6 N \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot b_1^{-\frac{5}{4}} \ \leq 10^5 \tau_1^{loc} \Rightarrow b_1 \leq \frac{4 \cdot 10^3 \tau_1^{loc}}{N\left(\sum_{i=2}^n\left(\tau_i^{loc}\right)^{-1}\right)^{-1}}
+    \frac{1}{4} \cdot 10^6 N \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot b_1^{-\frac{5}{4}} \ \leq 10^5 \tau_1^{loc} \Rightarrow b_1 \leq \frac{4 \cdot 10^3 \tau_1^{loc}}{N\left(\sum_{i=2}^n\left(\tau_i^{loc}\right)^{-1}\right)^{-1}}.
 \end{gather*}
 
 \section{Conclusion}
