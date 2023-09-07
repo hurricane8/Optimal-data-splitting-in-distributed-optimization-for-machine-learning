@@ -1,9 +1,15 @@
 \documentclass{article}
 
-\usepackage{arxiv}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+% \usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
 
-\usepackage[utf8]{inputenc} % allow utf-8 input
-\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{dan2e}
+
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
@@ -12,8 +18,8 @@
 \usepackage{microtype}      % microtypography
 \usepackage{lipsum}		% Can be removed after putting your text content
 \usepackage{graphicx}
-\usepackage{natbib}
-\usepackage{doi}
+% \usepackage{natbib}
+% \usepackage{doi}
 \usepackage{mathtools}
 \usepackage{xspace}	
 \usepackage{amsthm}
@@ -22,84 +28,133 @@
 \usepackage{amsmath,amssymb}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
-\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
-	
+
+\theoremstyle{definition}
+\newtheorem{defi}{Определение}
+\theoremstyle{plain}
+% \newtheorem{remark}{Замечание}
+% \newtheorem{theorem}{Теорема}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
 
+% my addition
 
 
-\title{Optimal data splitting in distributed optimization \\for machine learning}
-
-%\date{September 9, 1985}	% Here you can change the date presented in the paper title
-%\date{} 					% Or removing it
-
-\author{Gleb Molodtsov^{$\dagger$}
-% $ \thanks{Use footnote for providing further
-%		information about author (webpage, alternative
-%		address)} 
-    \\
-	MIPT, Russia\\
-	\texttt{molodtsov.gl@phystech.edu} \\
-	%% examples of more authors
-	\And
-	Daniil Medyakov^{$\dagger$} \\
-	MIPT, Russia\\
-	\texttt{mediakov.do@phystech.edu} \\
- \And
-	Alexander Beznosikov \\
-	MIPT, Russia\\
-	\texttt{anbeznosikov@gmail.com} \\
- \And
-	Alexander Gasnikov \\
-	MIPT, Russia\\
-	\texttt{gasnikov@yandex.ru} \\
-	%% \AND
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
+\usepackage[english]{babel}
+\usepackage[backend=biber,style=ieee,autocite=inline]{biblatex}
+\bibliography{refs.bib}
+\DefineBibliographyStrings{english}{%
+  bibliography = {References},}
+\DeclareFieldFormat{doi}{%
+  doi\addcolon\space
+  \ifhyperref
+    {\lowercase{\href{https://doi.org/#1}{\nolinkurl{#1}}}}
+    {\lowercase{\nolinkurl{#1}}}
 }
 
-% Uncomment to remove the date
-\date{}
+\usepackage{graphicx}
+\usepackage[symbol]{footmisc}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\usepackage{float}
+\usepackage{mathtools}
+\usepackage{amssymb, amsmath, latexsym}
+\usepackage{nicefrac}
+\usepackage{hhline}
+\usepackage{makecell}
+\usepackage{caption}
+\usepackage{multirow}
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\theadgape{\Gape[2pt]}
+\renewcommand\cellgape{\Gape[2pt]}
 
-% Uncomment to override  the `A preprint' in the header
-\renewcommand{\headeright}{Technical Report}
-\renewcommand{\undertitle}{Technical Report}
-%\renewcommand{\shorttitle}{\textit{arXiv} Template}
+\usepackage{colortbl}
+\definecolor{bgcolor}{rgb}{0.8,1,1}
+\definecolor{bgcolor2}{rgb}{0.8,1,0.8}
+\usepackage{threeparttable}
+\newcommand{\myred}[1]{{\color{red}#1}}
+\newcommand{\myblue}[1]{{\color{blue}#1}}
+% \usepackage[nocompress]{cite}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\usepackage[colorinlistoftodos,bordercolor=orange,backgroundcolor=orange!20,linecolor=orange,textsize=scriptsize]{todonotes}
+\usepackage{algorithm}\usepackage{algpseudocode}
+\newcommand{\argmin}{\mathop{\arg\!\min}}
+\newcommand{\argmax}{\mathop{\arg\!\max}}
+\allowdisplaybreaks
+\graphicspath{ {images/} }
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
 
-%%% Add PDF metadata to help others organize their library
-%%% Once the PDF is generated, you can check the metadata with
-%%% $ pdfinfo template.pdf
+
+% my addition end
+
 
 \begin{document}
+
+% TITLE START
+
+\Volume{--}
+\Year{2023}
+\Pages{--}
+
+\udk{--}
+
+\title{Optimal data splitting in distributed optimization for machine learning}
+
+\author{Medyakov Daniil\Addressmark[1],
+Molodtsov Gleb\Addressmark[1],
+Aleksandr Beznosikov\Addressmark[1],
+Alexander Gasnikov\Addressmark[1]}
+
+\Addresstext[1]{Moscow Institute of Physics and Technology, Dolgoprudny, Russia}
+
+\Emailtext[1]{beznosikov.an@phystech.edu}
+
+\markboth{D. Medyakov, G. Molodtsov, A. Beznosikov, A. Gasnikov}{Optimal data splitting in distributed optimization for machine learning}
+
+
+% \presentedby{Представлено академиком Б.\,С.~Кашиным}
+
+% \dateA{01.04.2022}
+% \dateB{31.04.2022}
+% \dateC{27.05.2022}
+
+
+% \alttitle{Generalization of Landau and Becker--Pommerenke inequalities}
+
+% \altauthor{O.\,S.~Kudryavtseva\Addressmark[a,b]\Emailmark[1], A.\,P.~Solodov\Addressmark[a]\Emailmark[2]}
+
+% \altAddresstext[a]{Lomonosov Moscow State University, Moscow Center for Fundamental and Applied Mathematics, \\ Moscow, Russian Federation}
+
+% \altAddresstext[b]{Volgograd State Technical University, Volgograd, Russian Federation}
+
+% \altpresentedby{Presented by Academician of the RAS B.\,S.~Kashin}
+
+
+
 \maketitle
+
+% \doi{10.31857/S2686954322040117}
+
+% ABSTRACT STARTS
 
 \begin{abstract}
 The distributed optimization problem has become increasingly relevant recently. It has a lot of advantages such as processing a large amount of data in less time compared to non-distributed methods. However, most distributed approaches suffer from a significant bottleneck -- the cost of communications. Therefore, a large amount of research has recently been directed at reducing these costs. One such approach uses local data similarity. In particular, an optimal method for distributed problems under the Hessian similarity condition has been proposed very recently. But this result, as well as results from other works solve the communication bottleneck by focusing only on the fact that communication is significantly more expensive than local computing and does not take into account the various capacities of network devices and the different relationship between communication time and server capacity. We consider this problem an the objective of this study is to achieve an optimal ratio of distributed data between the server and local machines for any communication costs and local computations. The running times of the network are compared between uniform and optimal distributions. The superior theoretical performance of our solutions is experimentally validated.
 \end{abstract}
 
 
-% keywords can be removed
-% \keywords{First keyword \and Second keyword \and More}
-
-
 \section{Introduction}
 
-\subsection{Distributed optimization}
+\section*{1.1. Distributed optimization}
+
 We consider optimization problems of the following form:
 \begin{equation}
     \label{eq:1}
@@ -111,13 +166,13 @@ To achieve the best results in modern machine learning and minimization tasks, r
 
 Several solution methods have been proposed to solve \eqref{eq:1}. The prototype approach involves interleaving edge devices calculations (nodes $i = 2, \ldots, n$) with communications to and from the server ($i = 1$), which maintains and updates the authoritative copy of the optimization variables, eventually producing the final solution estimate. In distributed learning of complex models, the communication overhead between devices in the network often becomes a bottleneck. Such a problem makes it necessary to develop more efficient distributed learning methods, some of which have been described in \cite{konevcny2016federated, ghosh2020communication, smith2018cocoa, gorbunov2021marina}.
 
-\subsection{Distributed optimization under similarity}
+\section*{1.2. Distributed optimization under similarity}
 
 It is trendy today in machine learning to use momentum-based methods. One of the methods for solving a distributed optimization problem is the application of Nesterov acceleration \cite{nesterov2018lectures}, which is an optimal method for smooth non-distributed optimization problems. This method can be applicable to distributed networks as follows. At each iteration we will calculate the gradient locally and send the results to the server. The server will average the obtained gradients and make a method step. Then the number of communications will be equal to the number of iterations. In this case, we obtain optimal estimates for local computations -- $\sqrt{\kappa}, \kappa = \nicefrac{L}{\mu}$, where $L$ and $\mu$ are constants of smoothness and strong-convexity of target function $f$. In case $\kappa$ is small, this approach is acceptable. However, for ill-conditioned functions with a large $\kappa$, the polynomial dependence on $\kappa$ may be unsatisfactory, due to the high cost of communications. This is often the case for many empirical risk minimization (ERM) problems where the optimal regularization parameter for test predictive performance is very small.
 
 To further improve communication complexity, we can exploit the additional structure typically found in ERM problems, known as function similarity \cite{arjevani2015communication, shamir2014communication, matsushima2014distributed}. One can define it as the difference of function gradients, i.e., $||\nabla f_i (x) - \nabla f_j (x)|| < \delta ~~  \forall x$. But this approach is not "natural", since if the problem is not bounded, such a $\delta$ cannot exist. Consider for example a quadratic problem: $\nexists~ \delta: \|(A_i - A_j)x\| < \delta~$  if $~ x\rightarrow \infty$. Therefore, we will consider a different approach: Hessian similarity. Specifically, for all $x$ in a suitable domain of interest and all $i \neq j; ~ i,j \in \{1,\ldots,n\}$, the difference between the Hessian matrices of local losses, denoted by $\|\nabla ^2 f_i(x) - \nabla ^2 f_j(x)\|$, is bounded by $\delta$, where $\delta > 0$ measures the degree of similarity. Under this assumption, we can estimate $\delta \sim \mathcal O(\nicefrac{1}{\sqrt{N}})$, where $N$ is the sample size per device \cite{arjevani2015communication}. This approach was used for the first time in \cite{shamir2014communication}.  After that, lower estimates were proved for this problem in \cite{arjevani2015communication}, where communication costs are proportional to $\sqrt{\nicefrac{\delta}{\mu}}$. Then for a long time researchers tried to find methods that would reach these estimates. Algorithms such as \cite{tian2022acceleration, sun2022distributed, reddi2016aide, hendrikx2020statistically, beznosikov2021distributed} have been obtained. In 2022, it was possible to obtain the optimal method which is described in \cite{kovalev2022optimal}. 
 
-\subsection{Various communication costs and local computations} \label{eq:1.3}
+\section*{1.3. Various communication costs and local computations} \label{eq:1.3}
 
 In these works, the assumption was made that communications cost significantly more than local computation. Moreover, in general, works on distributed optimization, not only in Hessian similarity, have made this assumption. We look at this question from a different angle. We will move away from fixed big communications and make 2 \textbf{assumptions}:
 \begin{itemize}
@@ -128,7 +183,7 @@ In these works, the assumption was made that communications cost significantly m
 
 Based on the above, in this paper we reply the question: 
 \begin{center}
-    \textit{ Can we find such a distribution of data among the devices in the network to reduce the actual running time of the optimal algorithm} \citep{kovalev2022optimal}\textit{~for any communication costs and local computations?}
+    \textit{ Can we find such a distribution of data among the devices in the network to reduce the actual running time of the optimal algorithm} \cite{kovalev2022optimal}\textit{~for any communication costs and local computations?}
 \end{center}
 
 In practice, networks can run for long periods of time and as a consequence, noise can occur. In other words, communication costs and device capacities are not constant values. In that way, we will make one more \textbf{assumption}:
@@ -136,7 +191,7 @@ In practice, networks can run for long periods of time and as a consequence, noi
     \item [3.] We put communication costs and device capacities as random variables, start the network operation for a long time and measure their expectation and variance. Due to the fact that the distribution of data to devices depends on the constant communication time and device power, in reality, the optimal distribution will be different on account of noise. Therefore, this assumption raises the question of measuring the program running time error under the optimal data distribution.
 \end{itemize}
 
-\subsection{Contributions}
+\section*{1.4. Contributions}
 
 In general, our contribution is as follows:
 \begin{itemize}
@@ -178,9 +233,9 @@ Finally, we obtain the following optimization problem:
     \underset{\sum\limits_{i = 1}^{n} b_i = N; \delta = \frac{L}{{b_1}^{\gamma}}}{\min}[ 2\cdot\max(\tau_1^{loc}\cdot b_1, \tau_2^{loc}\cdot b_2, \ldots, \tau_n^{loc}\cdot b_n)\cdot K + 2\cdot K\cdot\tau_{comm} + \tau_1\cdot k_{some}], ~ \gamma \in \{\frac{1}{2}, 1\}.
 \end{equation}
 
-\section{How to solve \eqref{eq:4}}
+\section{How to solve (\ref{eq:4})}
 
-\subsection{The primary problem of minimization}
+\section*{3.1. The primary problem of minimization}
 In \cite{kovalev2022optimal} the estimates of $K$ and $k_{some}$ are found, namely: \\ $2\cdot K = \mathcal O(\max\{1, \sqrt{\frac{\delta}{\mu}}\}log(\frac{1}{\varepsilon})), k_{some} = \mathcal O(\max\{1, \sqrt{\frac{L}{\delta}}, \sqrt{\frac{\delta}{\mu}}, \sqrt{\frac{L}{\mu}}\}\log(\frac{1}{\varepsilon}))$. \\
 
 Thus, \eqref{eq:4} is reduced to:
@@ -194,7 +249,7 @@ Thus, \eqref{eq:4} is reduced to:
     \end{split}
 \end{eqnarray}
 
-\subsection{Auxiliary problem}
+\section*{3.2. Auxiliary problem}
 Consider an auxiliary problem:
 \begin{equation}
     \label{eq:6}
@@ -206,7 +261,6 @@ Consider an auxiliary problem:
     \label{l1}
     The solution of problem \eqref{eq:6} is $\overrightarrow{b} = (b_2, b_3, \ldots, b_n)^{T}$ satisfying $\tau_2^{loc}\cdot b_2 = \tau_3^{loc}\cdot b_3 = \ldots = \tau_n^{loc}\cdot b_n$.
     \begin{proof}
-        \begin{spacing}{1.35}
         
         Without loss of generality, let us assume fixed values for $\tau_2^{loc}\leq \tau_3^{loc}\leq \ldots \leq \tau_n^{loc}$. \\
         Then let us arbitrarily choose $b_2\geq b_3\geq \ldots \geq b_n$.
@@ -229,7 +283,6 @@ Consider an auxiliary problem:
         This contradicts the assumption of minimality. 
         \\
         Thus, for the distribution that minimizes the function $g(\overrightarrow{b}) = \max(\tau_2^{loc}\cdot b_2, \tau_3^{loc}\cdot b_3, \ldots, \tau_n^{loc}\cdot b_n)$, it holds that $\tau_2^{loc}\cdot b_2 = \tau_3^{loc}\cdot b_3 = \ldots = \tau_n^{loc}\cdot b_n$.
-        \end{spacing}
     \end{proof}
 \end{lemma}
 Let us return to the problem \eqref{eq:5}. In addition to the minimum expression already studied in \eqref{eq:6}, there are additional terms in the problem \eqref{eq:5}.  $\delta$ in \eqref{eq:5} depends on the value of $b_1$, but do not depend on $b_i, i = \overline{2, n}$. From this and Lemma \ref{l1}, it follows that in the original problem \eqref{eq:5}, the data sharing between the 2nd, 3rd, and subsequent devices should be proportional. Thus, the problem \eqref{eq:5} is reduced to a new problem with additional constraints:
@@ -248,12 +301,13 @@ Let us return to the problem \eqref{eq:5}. In addition to the minimum expression
 
     
 
-\subsection{Define the final minimization problem}
-It follows from Lemma \ref{l1} that $b_i \tau_i^{loc} = const ~ \forall i \in \overline{2, n}$.
+\section*{3.3. Define the final minimization problem}
+It follows from Lemma \ref{l1} that $b_i\cdot \tau_i^{loc} = const ~ \forall i \in \overline{2, n}$.
 Therefore, $$ N - b_1 = \sum\limits_{i = 2}^{n} b_i = \sum\limits_{i = 2}^{n} \frac{\tau_2^{loc}\cdot b_2}{\tau_i^{loc}} = \tau_2^{loc}\cdot b_2 \cdot \sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}} \Rightarrow
 b_2 = \frac{N - b_1}{\tau_2 ^{loc}}(\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}.$$
 As mentioned above, we will consider the case of $\delta = \frac{L}{b_1}$ and case of $\delta = \frac{L}{\sqrt{b_1}}$.
-\subsubsection{Case of $~\delta = \frac{L}{b_1}$}
+\section*{3.3.1. Case of $\delta = \frac{L}{b_1}$}
+
 There the following relations are fulfilled:
 \begin{equation}
     \notag
@@ -312,7 +366,7 @@ $(a): ~\mathcal{F'}_1(b_1) = -\frac{1}{2}c_1 b_1^{-\frac{3}{2}}  [N (\sum\limits
 $(b): ~\mathcal{F'}_2(b_1) = -\frac{1}{2}c_1 b_1^{-\frac{3}{2}} \tau_{comm}\cdot \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon}) + \frac{1}{2} c_1 b_1^{-\frac{1}{2}}  \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon})\tau_1^{loc}   + \tau_1^{loc}\cdot c_2  \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon})$\\
 
 
-\subsubsection{Case of $~\delta = \frac{L}{\sqrt{b_1}}$}
+\section*{3.3.2. Case of $\delta = \frac{L}{\sqrt{b_1}}$}
 We will proceed similarly to the previous point. First, let us present the necessary relations in this case.
 \begin{equation}
     \notag
@@ -366,8 +420,8 @@ $(a): ~\mathcal{F'}_1(b_1) = -\frac{1}{4}c_1 b_1^{-\frac{5}{4}}  [N (\sum\limits
 \tau_1^{loc}\cdot c_2  \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon})$ \\
 $(b): ~\mathcal{F'}_2(b_1) = -\frac{1}{4}c_1 b_1^{-\frac{5}{4}} \tau_{comm}\cdot \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon}) + \frac{3}{4} c_1 b_1^{-\frac{1}{4}}  \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon})\tau_1^{loc}   + \tau_1^{loc}\cdot c_2  \sqrt{\frac{L}{\mu}}log (\frac{1}{\varepsilon})$\\
 
-\subsection{Final solution in limiting cases}
-\subsubsection{Case of $~\delta = \frac{L}{b_1}$}\label{eq:3.4.1}
+\section*{3.4. Final solution in limiting cases}
+\section*{3.4.1. Case of $~\delta = \frac{L}{b_1}$}\label{eq:3.4.1}
 Our goal is to find the minimum of the already obtained functions $\mathcal{F}_1(b_1), \mathcal{F}_2(b_1)$. To do this, we will look for the zeros of $\mathcal{F'}_1(b_1), \mathcal{F'}_2(b_1)$. Here we obtain the cubic equation.
 To solve it, we can use the Cardano formula.\\
 Consider the equation $ax^{-\frac{1}{2}} + bx^{-\frac{3}{2}} + c = 0$,\\
@@ -404,7 +458,7 @@ we get a solution: \\
 
 Hence the desired solution is trivially obtained. Since we have obtained one value of $b_1$ on each of the half-intervals, which is the minimum of the function on its, so by choosing the one on which the function is smaller, we obtain the desired $b_1$.
 
-\subsubsection{Case of $~\delta = \frac{L}{\sqrt{b_1}}$}\label{eq:3.4.2}
+\section*{3.4.2. Case of $~\delta = \frac{L}{\sqrt{b_1}}$}\label{eq:3.4.2}
 Proceed similarly to \ref{eq:3.4.1} does not work, since we cannot write out the solution of these equations in analytic form due to their powers.
 Therefore, let us consider the following limiting cases:
 \begin{enumerate}
@@ -480,6 +534,7 @@ Establish $\alpha = c_1\cdot\sqrt{\frac{L}{\mu}}\cdot \log(\frac{1}{\varepsilon}
 Thus, in the case of small $\tau_{comm}$ we obtained the following result:\\
 $b_{1_{\min}} \leq b_1^0 = \frac{N (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}{\tau_1^{loc} + (\sum\limits_{i = 2}^{n} \frac{1}{\tau_i^{loc}})^{-1}}$.
 \end{itemize}
+
 \textbf{Consider case 2:}
 \begin{itemize}
 \item []
@@ -518,14 +573,14 @@ Summarizing all of the above in this case, it is worth noting that for very larg
 \end {equation}
 \end{itemize}
 
-\subsection{Practical solution}\label{eq:3.5}
+\section*{3.5. Practical solution}\label{eq:3.5}
 Since an analytical solution is not found for all cases, we give a general numerical solution to our problem. In order to determine the minimum of these functions on the respective half-intervals, we will examine points where the derivatives of $\mathcal{F'}_1(b_1)$ and $\mathcal{F'}_2(b_1)$ approach zero. It should be noted that, given the nature of these functions, their derivatives can only be zero once on the desired half-interval. Hence, by employing Newton's method \cite{polyak2007newton} for $\mathcal{F'}_1(b_1)$ and $\mathcal{F'}_2(b_1)$, we can locate its zeros. Subsequently, we need to compare the values of the corresponding function at these points with the value at the extreme point of the interval. One of these points will provide the minimum solution, thereby serving as the ultimate solution to the problem \eqref{eq:fm1} and \eqref{eq:fm2}.
 
 \section{Noise in the networks}
 
 Now we proceed to the third assumption from the \ref{eq:1.3}. As mentioned above, let $\tau_{comm}$ and $\tau_i^{loc}$ be random variables: $\exists ~\mathbb E [\tau_{comm}], \mathbb E [\tau_i^{loc}], \mathbb D [\tau_{comm}] < \infty, \mathbb D [\tau_i^{loc}] < \infty$. Here we consider case of $\delta = \frac{L}{\sqrt{b_1}}$. The analytical solution in this set up was obtained in the limiting cases for small and large communications, with respect to local computation time. Let us consider them separately. 
 
-\subsection{Case of big communication time}\label{s:4.1}
+\section*{4.1. Case of big communication time}\label{s:4.1}
 
 Allow us impose additional constraints on the random variables $\tau_{comm}$ and $\tau_i^{loc}$: $\forall \{\tau_{comm}^k\}_{k = 1}^m, \{\tau_{i}^{loc, ~k}\}_{k = 1}^m~\forall k, i \hookrightarrow \tau_{comm}^k \gg \tau_{i}^{loc, ~k}$. Consider the function of task running time \eqref{eq:fm2} at the point of minimum. Earlier in \ref{eq:3.4.2} it was obtained:
 \begin{equation}
@@ -543,7 +598,7 @@ To obtain the result, we produce the following equality: $X, Y -$  independent r
     \end{split}
 \end{eqnarray}
 
-\subsection{Case of small communication time}
+\section*{4.2. Case of small communication time}
 
 Here we will consider noise only on communications, i.e. we will put the time of communications as a random variable with mathematical expectation and finite variance, and the time of local computations for each device as a constant value. Similarly to the previous paragraph we impose additional constraints: $\forall \{\tau_{comm}^k\}_{k = 1}^m~\forall k, i \hookrightarrow \tau_{comm}^k \ll \tau_{i}^{loc}$. Consider the function of task running time \eqref{eq:fm2} at the point of minimum (here we'll take the point $b_1^0$):
 \begin{eqnarray}
@@ -563,7 +618,7 @@ Then the error required will be as follows:
 
 \section{Experiments}
 
-\subsection{Experiments with data distribution}
+\section*{5.1. Experiments with data distribution}
 For experimental verification of the theoretical results we consider the ridge regression problem: 
 \begin{equation}
     \label{ridge}
@@ -594,22 +649,22 @@ In the end, two cases were considered:
 
 For case 1, following setups were considered:
 \begin{enumerate}
-    \item small communications ($b_1 = b_1^0$) \eqref{eq:3.4.2};
-    \item large communications \eqref{eq:3.4.2};
-    \item search for optimal allocation using Newton's method \eqref{eq:3.5}.
+    \item small communications ($b_1 = b_1^0$) \hyperref[eq:3.4.2]{3.4.2};
+    \item large communications \hyperref[eq:3.4.2]{3.4.2};
+    \item search for optimal allocation using Newton's method \hyperref[eq:3.5]{3.5}.
 \end{enumerate}
 
 For case 2, following setups were considered:
 \begin{enumerate}
-    \item search for the optimal solution using the Cardano formula \eqref{eq:3.4.1};
-    \item search for optimal allocation using Newton's method \eqref{eq:3.5}.
+    \item search for the optimal solution using the Cardano formula \hyperref[eq:3.4.1]{3.4.1};
+    \item search for optimal allocation using Newton's method \hyperref[eq:3.5]{3.5}.
 \end{enumerate}
 
 For all cases, acceleration was found and plots were shown at \ref{ris:image}.
 
 \begin{figure}[!ht]
-    {\includegraphics[scale = 0.2]{график1.png}}
-    {\includegraphics[scale = 0.2]{график2.png}}
+    {\includegraphics[scale = 0.25]{график11.png}}
+    {\includegraphics[scale = 0.25]{график22.png}}
     \caption{Experiments with data distribution}
     \label{ris:image}
 \end{figure}
@@ -621,7 +676,7 @@ For all cases, acceleration was found and plots were shown at \ref{ris:image}.
 %\label{ris:image}
 %\end{figure}
 
-\subsection{Analyze}
+\section*{5.2. Analyze}
 Let us analyze the obtained plots. The formula for the case of large communications and the Cardano formula practically coincided with the optimal solution search. The case of small communications showed worse results. This is explained by the fact that the formula was obtained in rough approximation. But if we take into account the constants $\alpha, \beta$, we can get a better result, which is shown below.
 
 
@@ -639,12 +694,12 @@ Let us analyze the obtained plots. The formula for the case of large communicati
     \frac{1}{4} \cdot 10^6 N \left(\sum_{i=2}^n \frac{1}{\tau_i^{loc}}\right)^{-1} \cdot b_1^{-\frac{5}{4}} \ \leq 10^5 \tau_1^{loc} \Rightarrow b_1 \leq \frac{4 \cdot 10^3 \tau_1^{loc}}{N\left(\sum_{i=2}^n\left(\tau_i^{loc}\right)^{-1}\right)^{-1}}.
 \end{gather*}
 
-\subsection{Experiments with noise in the network}
+\section*{5.3. Experiments with noise in the network}
 
-We modified the simulation of Algorithm \ref{alg:1} by adding communication  and device power noise. We generated the noise from a uniform distribution and its value was 10, 20, 30, 50, and 100 percent, respectively, relative to the absolute value of communication time and device power. In the new noise model, we measured the running time of the ridge regression problem with the resulting data distribution and with the uniform one, obtaining the acceleration that gives the correct data distribution. In the process, we measured the mathematical expectation of communication costs and device power and obtained the acceleration at these expected values. Experiments were conducted only in the case of big communication costs \ref{s:4.1}. In Figure \ref{ris:image2} we have plotted the ratio of these accelerations and confidence intervals.
+We modified the simulation of Algorithm \ref{alg:1} by adding communication  and device power noise. We generated the noise from a uniform distribution and its value was 10, 20, 30, 50, and 100 percent, respectively, relative to the absolute value of communication time and device power. In the new noise model, we measured the running time of the ridge regression problem with the resulting data distribution and with the uniform one, obtaining the acceleration that gives the correct data distribution. In the process, we measured the mathematical expectation of communication costs and device power and obtained the acceleration at these expected values. Experiments were conducted only in the case of big communication costs \hyperref[s:4.1]{4.1}. In Figure \ref{ris:image2} we have plotted the ratio of these accelerations and confidence intervals.
 
 \begin{figure}[h]
-    \center{{\includegraphics[scale = 0.3]{график_шумы.png}}}
+    \center{{\includegraphics[scale = 0.35]{график_шумы.png}}}
     \caption{Experiments with the noise in the network}
     \label{ris:image2}
 \end{figure}
@@ -653,8 +708,8 @@ We modified the simulation of Algorithm \ref{alg:1} by adding communication  and
 
 In this paper, we presented a new data partitioning method for a distributed optimization problem.
 Our solution is based on constructing the running time function of Algorithm \ref{alg:1} and finding its minimum. Our method works well in networks with varying communication costs between the server and local devices and different capacities of the devices. The theoretical results have been confirmed experimentally. This shows that our method gives acceleration on this type of problems. In addition, by assuming noise in the networks, we obtain the error of the optimal solution and conduct appropriate experiments.
-\bibliographystyle{plain}
-\bibliography{refs}  
+
+\printbibliography[heading=bibintoc,title={References}]
 
 
 \end{document}
